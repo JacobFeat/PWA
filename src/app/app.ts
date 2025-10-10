@@ -13,7 +13,7 @@ import { FlashcardService, Difficulty } from './flashcard.service';
 export class App {
   private flashcardService = inject(FlashcardService);
 
-  protected readonly title = signal('Flashcards App');
+  protected readonly title = signal('JavaScript Flashcards');
   protected readonly isFlipped = signal(false);
   protected readonly showButtons = signal(false);
 
