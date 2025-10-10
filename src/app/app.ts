@@ -37,17 +37,14 @@ export class App {
     }
     // Update card with SM-2 algorithm
     this.flashcardService.updateCardWithSM2(card.id, difficulty);
-    // Step 1: Flip back to question side
+    // Flip back to question side after animation, then update displayed card
     this.isFlipped.set(false);
     this.showButtons.set(false);
-    this.displayedSide.set('question');
-    // Step 2: After animation, update displayed card
     setTimeout(() => {
       this.flashcardService.nextCard();
       this.displayedCard.set(this.flashcardService.currentCard());
-      // Ensure side is question
       this.displayedSide.set('question');
-    }, 600); // match CSS transition duration
+    }, 300); // match CSS transition duration
   }
 
   // Ensure displayedCard stays in sync on reset
