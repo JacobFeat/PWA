@@ -22,7 +22,7 @@
       "updateMode": "prefetch",
       "resources": {
         "files": [
-          "/assets/flashcards.json",
+          "/public/assets/flashcards.json",
           "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
         ]
       }
