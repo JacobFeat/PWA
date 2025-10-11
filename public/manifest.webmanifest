@@ -53,5 +53,14 @@
       "type": "image/png",
       "purpose": "maskable any"
     }
+  ],
+  "screenshots": [
+      {
+       "src": "screen.png",
+        "sizes": "732x1348",
+        "type": "image/png",
+        "form_factor": "wide",
+        "label": "Flashcards App",
+      }
   ]
 }
