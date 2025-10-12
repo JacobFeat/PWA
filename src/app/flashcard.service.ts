@@ -26,6 +26,7 @@ export class FlashcardService {
   private flashcardsData = signal<Flashcard[]>([]);
   private currentCardIndex = signal(0);
   private loaded = signal(false);
+  public readonly error = signal<string | null>(null);
 
   readonly flashcards = computed(() => this.flashcardsData());
   readonly currentCard = computed(() => {
@@ -35,22 +36,23 @@ export class FlashcardService {
   });
 
   readonly isLoaded = computed(() => this.loaded());
+  public readonly errorSignal = computed(() => this.error());
 
   constructor() {
     this.loadFlashcards();
   }
 
   private loadFlashcards(): void {
-    this.http.get<any[]>('/assets/flashcards.json').subscribe(jsonCards => {
-      const cards: Flashcard[] = jsonCards.map(card => ({
-        ...card,
-        easeFactor: 2.5,
-        repetitions: 0,
-        interval: 1,
-        nextReviewDate: new Date()
-      }));
-      this.flashcardsData.set(cards);
-      this.loaded.set(true);
+    this.http.get<Flashcard[]>('/assets/flashcards1.json').subscribe({
+      next: (data) => {
+        this.flashcardsData.set(data);
+        this.loaded.set(true);
+        this.error.set(null);
+      },
+      error: (err) => {
+        this.error.set('Failed to load flashcards. Please try again later.');
+        this.loaded.set(false);
+      }
     });
   }
 

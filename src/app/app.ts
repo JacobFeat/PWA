@@ -24,6 +24,7 @@ export class App {
   readonly currentCard = this.flashcardService.currentCard;
   readonly isLoaded = this.flashcardService.isLoaded;
   readonly Difficulty = Difficulty;
+  readonly error = this.flashcardService.error;
 
   onDifficultySelect(difficulty: Difficulty): void {
     const card = this.currentCard();

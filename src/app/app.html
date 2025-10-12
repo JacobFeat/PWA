@@ -1,56 +1,44 @@
 <div class="flashcard-container">
   <div class="title-container">
     <h1>{{ title() }}</h1>
-    <img style="display: block; width: 72px; margin: 0 auto" src="/assets/js.png" alt="">
+    <img style="display: block; width: 72px; margin: 0 auto" src="/assets/js.png" alt="JavaScript logo">
   </div>
 
-  @if (!isLoaded()) {
+  @if (error()) {
+    <div class="toast-error">
+      {{ error() }}
+    </div>
+  }
+
+  @if (!isLoaded() && !error()) {
     <div class="loading">
       <p>Loading flashcards...</p>
     </div>
-  } @else {
+  } @else if (isLoaded()) {
     @if (currentCard(); as card) {
-        <div class="flashcard" [class.flipped]="isFlipped()">
-          <div class="flashcard-front">
-            <div class="card-content">
-              <h2>Question</h2>
-              <p>{{ card.question }}</p>
-            </div>
-          </div>
-
-          <div class="flashcard-back">
-            <div class="card-content">
-              <h2>Answer</h2>
-              <p>{{ card.answer }}</p>
-            </div>
+      <div class="flashcard" [class.flipped]="isFlipped()">
+        <div class="flashcard-front">
+          <div class="card-content">
+            <h2>Question</h2>
+            <p>{{ card.question }}</p>
           </div>
         </div>
-
-        <div class="buttons-container">
-          @if (!showButtons()) {
-            <button
-              class="difficulty-btn reveal-btn"
-              (click)="onDifficultySelect(Difficulty.Medium)">
-              Show Answer
-            </button>
-          } @else {
-            <button
-              class="difficulty-btn easy"
-              (click)="onDifficultySelect(Difficulty.Easy)">
-              Easy
-            </button>
-            <button
-              class="difficulty-btn medium"
-              (click)="onDifficultySelect(Difficulty.Medium)">
-              Medium
-            </button>
-            <button
-              class="difficulty-btn hard"
-              (click)="onDifficultySelect(Difficulty.Hard)">
-              Hard
-            </button>
-          }
+        <div class="flashcard-back">
+          <div class="card-content">
+            <h2>Answer</h2>
+            <p>{{ card.answer }}</p>
+          </div>
         </div>
+      </div>
+      <div class="buttons-container">
+        @if (!showButtons()) {
+          <button class="difficulty-btn reveal-btn" (click)="onDifficultySelect(Difficulty.Medium)">Show Answer</button>
+        } @else {
+          <button class="difficulty-btn easy" (click)="onDifficultySelect(Difficulty.Easy)">Easy</button>
+          <button class="difficulty-btn medium" (click)="onDifficultySelect(Difficulty.Medium)">Medium</button>
+          <button class="difficulty-btn hard" (click)="onDifficultySelect(Difficulty.Hard)">Hard</button>
+        }
+      </div>
     } @else {
       <div class="no-cards">
         <p>No flashcards available!</p>
