@@ -1,5 +1,8 @@
 <div class="flashcard-container">
-  <h1>{{ title() }}</h1>
+  <div class="title-container">
+    <h1>{{ title() }}</h1>
+    <img style="display: block; width: 72px; margin: 0 auto" src="/assets/js.png" alt="">
+  </div>
 
   @if (!isLoaded()) {
     <div class="loading">
@@ -7,7 +10,6 @@
     </div>
   } @else {
     @if (currentCard(); as card) {
-      <div class="flashcard-wrapper">
         <div class="flashcard" [class.flipped]="isFlipped()">
           <div class="flashcard-front">
             <div class="card-content">
@@ -33,9 +35,9 @@
             </button>
           } @else {
             <button
-              class="difficulty-btn hard"
-              (click)="onDifficultySelect(Difficulty.Hard)">
-              Hard
+              class="difficulty-btn easy"
+              (click)="onDifficultySelect(Difficulty.Easy)">
+              Easy
             </button>
             <button
               class="difficulty-btn medium"
@@ -43,29 +45,16 @@
               Medium
             </button>
             <button
-              class="difficulty-btn easy"
-              (click)="onDifficultySelect(Difficulty.Easy)">
-              Easy
+              class="difficulty-btn hard"
+              (click)="onDifficultySelect(Difficulty.Hard)">
+              Hard
             </button>
           }
         </div>
-
-        <div class="card-info">
-          <p>Repetitions: {{ card.repetitions }}</p>
-          <p>Ease Factor: {{ card.easeFactor | number:'1.2-2' }}</p>
-          <p>Next Review: {{ card.nextReviewDate | date:'short' }}</p>
-        </div>
-      </div>
     } @else {
       <div class="no-cards">
         <p>No flashcards available!</p>
       </div>
     }
-
-    <div class="controls">
-      <button class="control-btn" (click)="resetProgress()">
-        Reset Progress
-      </button>
-    </div>
   }
 </div>
