@@ -43,7 +43,7 @@ export class FlashcardService {
   }
 
   private loadFlashcards(): void {
-    this.http.get<Flashcard[]>('/assets/flashcards1.json').subscribe({
+    this.http.get<Flashcard[]>('/assets/flashcards.json').subscribe({
       next: (data) => {
         this.flashcardsData.set(data);
         this.loaded.set(true);
