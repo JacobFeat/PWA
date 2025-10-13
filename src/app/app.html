@@ -45,4 +45,14 @@
       </div>
     }
   }
+
+  @if (showUpdatePopup()) {
+    <div class="update-modal-backdrop">
+      <div class="update-modal">
+        <h2>New Version Available</h2>
+        <p>A new version of the app is ready to use.</p>
+        <button class="update-confirm-btn" (click)="onConfirmUpdate()">Reload &amp; Update</button>
+      </div>
+    </div>
+  }
 </div>

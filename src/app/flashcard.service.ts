@@ -39,7 +39,7 @@ export class FlashcardService {
   public readonly errorSignal = computed(() => this.error());
 
   constructor() {
-    this.loadFlashcards();
+    this.fetchFlashcardsFromApi();
   }
 
   private loadFlashcards(): void {
@@ -51,6 +51,22 @@ export class FlashcardService {
       },
       error: (err) => {
         this.error.set('Failed to load flashcards. Please try again later.');
+        this.loaded.set(false);
+      }
+    });
+  }
+
+  fetchFlashcardsFromApi(): void {
+    this.loaded.set(false);
+    this.error.set(null);
+    this.http.get<Flashcard[]>('https://pwa-backend-mockup.vercel.app/flashcards').subscribe({
+      next: (data) => {
+        this.flashcardsData.set(data);
+        this.loaded.set(true);
+        this.error.set(null);
+      },
+      error: (err) => {
+        this.error.set('Failed to load flashcards from API. Please try again later.');
         this.loaded.set(false);
       }
     });
