@@ -4,7 +4,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Difficulty, FlashcardService } from './flashcard.service';
 import { FakeApiService, Todo } from './fake-api.service';
 import { SwPush, SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { catchError, concatMap, EMPTY, filter, from, switchMap, tap } from 'rxjs';
+import { catchError, concatMap, EMPTY, filter, from, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -37,13 +37,14 @@ export class App {
     this.subscribe();
   }
 
-  #http = inject(HttpClient)
+  #http = inject(HttpClient);
   #baseUrl = 'https://pwa-backend-mockup.vercel.app'
-  permission = signal<NotificationPermission>("default");
+  // #baseUrl = 'http://192.168.0.107:3000';
+  permission = signal<NotificationPermission>('default');
 
   subscribe() {
     this.requestSubscription().subscribe(() => {
-      this.permission.set(Notification.permission)
+      this.permission.set(Notification.permission);
     });
   }
 
@@ -55,39 +56,24 @@ export class App {
   // }
 
   requestSubscription() {
-    return this.#vapidPublicKey().pipe(
-      switchMap(key =>
-        from(this.#swPush.requestSubscription({
-          serverPublicKey: key
-        }))
-      ),
-      concatMap(sub => this.#registerOnServer(sub)),
-      catchError((e: any) => {
-        console.log(e)
-        return EMPTY
-      })
-    )
+    return from(
+      this.#swPush.requestSubscription({
+        serverPublicKey:
+          'BCktAlsTxEKwTV7scYU-f45yGsPZSdMs9rO0zqEYjxcg5jtWMTJ0oX1iVCyUyoybG8s8q1SnP9XgpmF1YhTCe_U',
+      }),
+    ).pipe(concatMap((sub) => this.#registerOnServer(sub)));
   }
 
   #vapidPublicKey() {
-    return this.#http.get(
-      `${this.#baseUrl}/vapidPublicKey`,
-      { responseType: 'text' }
-    )
+    return this.#http.get(`${this.#baseUrl}/vapidPublicKey`, { responseType: 'text' });
   }
 
   #registerOnServer(params: PushSubscription) {
-    return this.#http.post(
-      `${this.#baseUrl}/notifications/subscribe`,
-      params
-    );
+    return this.#http.post(`${this.#baseUrl}/notifications/subscribe`, params);
   }
 
   sendMessage(title: string, description: string) {
-    return this.#http.post(
-      `${this.#baseUrl}/notifications/send`,
-      { title, description }
-    );
+    return this.#http.post(`${this.#baseUrl}/notifications/send`, { title, description });
   }
 
   protected readonly title = signal('My JavaScript Flashcards');
