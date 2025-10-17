@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Difficulty, FlashcardService } from './flashcard.service';
-import { FakeApiService, Todo } from './fake-api.service';
+import { Todo } from './fake-api.service';
 import { SwPush, SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { catchError, concatMap, EMPTY, filter, from, of, switchMap, tap } from 'rxjs';
+import { concatMap, filter, from, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,10 +15,9 @@ import { catchError, concatMap, EMPTY, filter, from, of, switchMap, tap } from '
 })
 export class App {
   private flashcardService = inject(FlashcardService);
-  private fakeApiService = inject(FakeApiService);
+  private swPush = inject(SwPush);
 
   private swUpdate = inject(SwUpdate);
-  #swPush = inject(SwPush);
 
   constructor() {
     this.swUpdate.versionUpdates
@@ -27,19 +26,13 @@ export class App {
         tap(() => this.showUpdatePopup.set(true)),
       )
       .subscribe();
-
-    // if (this.swPush.isEnabled) {
-    //   this.swPush.messages.subscribe((msg) => {
-    //     console.log(msg);
-    //   });
-    // }
-
-    this.subscribe();
   }
 
-  #http = inject(HttpClient);
-  #baseUrl = 'https://pwa-backend-mockup.vercel.app'
-  // #baseUrl = 'http://192.168.0.107:3000';
+  private http = inject(HttpClient);
+  private baseUrl = 'https://pwa-backend-mockup.vercel.app';
+  private serverPublicKey =
+    'BCktAlsTxEKwTV7scYU-f45yGsPZSdMs9rO0zqEYjxcg5jtWMTJ0oX1iVCyUyoybG8s8q1SnP9XgpmF1YhTCe_U';
+
   permission = signal<NotificationPermission>('default');
 
   subscribe() {
@@ -48,39 +41,22 @@ export class App {
     });
   }
 
-  // submit() {
-  //   this.sendMessage(
-  //     this.notificationForm.value.title || '',
-  //     this.notificationForm.value.description || ''
-  //   ).subscribe()
-  // }
-
   requestSubscription() {
     return from(
-      this.#swPush.requestSubscription({
-        serverPublicKey:
-          'BCktAlsTxEKwTV7scYU-f45yGsPZSdMs9rO0zqEYjxcg5jtWMTJ0oX1iVCyUyoybG8s8q1SnP9XgpmF1YhTCe_U',
+      this.swPush.requestSubscription({
+        serverPublicKey: this.serverPublicKey,
       }),
-    ).pipe(concatMap((sub) => this.#registerOnServer(sub)));
+    ).pipe(concatMap((sub) => this.registerSubOnServer(sub)));
   }
 
-  #vapidPublicKey() {
-    return this.#http.get(`${this.#baseUrl}/vapidPublicKey`, { responseType: 'text' });
-  }
-
-  #registerOnServer(params: PushSubscription) {
-    return this.#http.post(`${this.#baseUrl}/notifications/subscribe`, params);
-  }
-
-  sendMessage(title: string, description: string) {
-    return this.#http.post(`${this.#baseUrl}/notifications/send`, { title, description });
+  private registerSubOnServer(params: PushSubscription) {
+    return this.http.post(`${this.baseUrl}/notifications/subscribe`, params);
   }
 
   protected readonly title = signal('My JavaScript Flashcards');
   protected readonly isFlipped = signal(false);
   protected readonly showButtons = signal(false);
 
-  // Track displayed card separately for smooth transition
   protected readonly displayedCard = signal(this.flashcardService.currentCard());
   protected readonly displayedSide = signal<'question' | 'answer'>('question');
 
